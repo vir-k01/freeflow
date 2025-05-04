@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "freeflow"
+version = "0.0.1"
+dependencies = [
+  "atomate2",
+  "pymatgen",
+  "fireworks",
+  "mp_api"
+]
+requires-python = ">=3.9"
+authors = [
+  {name = "Vir Karan", email = "virkaran@berkeley.edu"},
+]
+description = "Jobflow wrapper to run thermdynamic integration calculations with LAMMPS"
+readme = "README.md"
+

@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: freeflow
+Version: 0.0.1
+Summary: Jobflow wrapper to run thermdynamic integration calculations with LAMMPS
+Author-email: Vir Karan <virkaran@berkeley.edu>
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: atomate2
+Requires-Dist: pymatgen
+Requires-Dist: fireworks
+Requires-Dist: mp_api
+Dynamic: license-file
+
+# freeflow

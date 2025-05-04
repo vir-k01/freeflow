@@ -1,0 +1,4 @@
+atomate2
+pymatgen
+fireworks
+mp_api
