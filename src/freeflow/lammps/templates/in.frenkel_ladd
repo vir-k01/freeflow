@@ -1,0 +1,55 @@
+# This script runs a Frenkel-Ladd thermodynamic integration for the calculation of the free energy.
+
+# Simulation control parameters.
+variable         t_eq equal $eq_steps # Equilibration time.
+variable         t equal $run_steps # Switching time.
+
+
+units            metal
+
+read_data       system.data
+pair_style      $pair_style
+include forcefield.lammps
+neigh_modify     delay 0
+timestep         $timestep
+
+
+variable xcm equal xcm(all,x)
+variable ycm equal xcm(all,y)
+variable zcm equal xcm(all,z)
+velocity         all create $temperature 999 dist gaussian
+fix f1 all nph aniso $pressure $pressure $friction fixedpoint ${xcm} ${ycm} ${zcm}
+fix f2 all langevin $temperature $temperature $friction 999 zero yes
+compute c1 all temp/com
+fix_modify f1 temp c1
+fix_modify f2 temp c1
+run ${t_eq}
+unfix f1
+unfix f2
+# Integrator, Frenkel-Ladd modifier, and thermostat.
+fix              f1 all nve 
+$spring_fix_flag
+#fix              f2 all ti/spring $ ${t} ${t_eq} function 2
+fix              ft all langevin $temperature $temperature $friction 999 zero yes
+
+# Setup thermo output.
+thermo_style     custom step pe
+thermo           0
+variable         dE equal pe-f_f2
+variable         lambda equal f_f2[1]
+
+# Initial temperature to accelerate equilibration.
+velocity         all create $temperature 999 dist gaussian
+
+# Forward integration.
+run              ${t_eq}
+fix              f4 all print 1 "${dE} ${lambda}" title "# dE [eV] lambda" &
+                screen no file forward.dat
+run              ${t}
+unfix            f4
+
+# Backward integration. 
+run              ${t_eq}
+fix              f4 all print 1 "${dE} ${lambda}" title "# dE [eV] lambda" &
+                screen no file backward.dat
+run              ${t}

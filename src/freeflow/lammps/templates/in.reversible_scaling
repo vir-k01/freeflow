@@ -1,0 +1,45 @@
+# This script runs a Reversible Scaling thermodynamic integration for the calculation of the temperature dependence of the free energy.
+
+# Simulation control parameters.
+variable         t_eq equal $eq_steps # Equilibration time.
+variable         t equal $t_s # Switching time.
+variable         T equal $temperature # Simulation temperature.
+variable         P equal $pressure # Simulation pressure.
+variable         T_final equal $T_final
+
+units            metal
+read_data        system.data
+pair_style       $pair_style
+include          forcefield.lammps
+neigh_modify     delay 0
+timestep         $timestep
+
+# Setup thermo output.
+thermo_style     custom step pe
+thermo           0
+
+# Integrator, barostat, and thermostat.
+fix              f1 all npt temp ${T} ${T} 0.1 iso ${P} ${P} 1
+compute          c2 all temp/com
+fix_modify       f1 temp c2
+
+# Initial temperature to accelerate equilibration.
+velocity         all create ${T} ${rnd} dist gaussian
+
+# Forward integration.
+run              ${t_eq}
+variable         lambda equal 1/(1+(elapsed/${t})*($T_final/$T-1))
+fix              f2 all adapt 1 pair $pair_style scale * * v_lambda
+fix              f3 all print 1 "$(pe/atoms) ${lambda}" screen no &
+                file forward.dat title "# pe lambda"
+run              ${t}
+unfix            f2
+unfix            f3
+
+# Backward integration. 
+run              ${t_eq}
+variable         lambda equal 1/(1+(1-(elapsed/${t}))*($T_final/$T-1))
+fix              f2 all adapt 1 pair $pair_style scale * * v_lambda
+fix              f3 all print 1 "$(pe/atoms) ${lambda}" screen no &
+                file backward.dat title "# pe lambda"
+run              ${t}

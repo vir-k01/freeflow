@@ -71,7 +71,7 @@ class ReversibleScalingMaker(CustomLammpsMaker):
     name: str = "reversible_scaling"
     final_temperature: float = 300.0
     pressure: float = 1.0
-    reference_free_energy: dict = None  # Reference free energy dictionary
+    
     def __post_init__(self):
         self.input_file: LammpsInputFile | str = "in.reversible_scaling"
         
@@ -79,7 +79,6 @@ class ReversibleScalingMaker(CustomLammpsMaker):
             "final_temperature": self.final_temperature,
             "temperature": self.reference_free_energy.keys()[0],  # Assuming the first key is the temperature.
             "pressure": self.pressure,
-            "reference_free_energy": self.reference_free_energy
         })
         
         self.task_document_kwargs = {
