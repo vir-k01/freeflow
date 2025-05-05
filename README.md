@@ -9,4 +9,5 @@ This is an implementation of the non-equilibrium thermodynamic integration appro
 
 References:
 [1] Rodrigo Freitas, Mark Asta, and Maurice De Koning. “Nonequilibrium free-energy calculation of solids using LAMMPS”. In: Computational Materials Science 112 (2016), pp. 333–341
+
 [2] Sarath Menon et al. “Automated free-energy calculation from atomistic simulations”. In: Physical Review Materials 5.10 (2021), p. 103801.
