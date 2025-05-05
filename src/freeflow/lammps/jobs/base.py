@@ -6,8 +6,11 @@ from dataclasses import dataclass, field
 from emmet.core.vasp.calculation import StoreTrajectoryOption
 from scipy.integrate import cumulative_trapezoid as cumtrapz
 import numpy as np
+import os
 import scipy.constants as sc
 from typing import List
+
+TEMPLATE_DIR = os.path.join('..', os.path.dirname(__file__), 'templates')
 
 kB = sc.value('Boltzmann constant in eV/K')
 eV = sc.value('electron volt')
@@ -23,7 +26,7 @@ class ConstrainedRelaxMaker(CustomLammpsMaker):
     pressure : float = 1.0  # Default pressure in bar
 
     def __post_init__(self):
-        self.input_file: LammpsInputFile | str = "in.constrained_relaxation"
+        self.input_file: LammpsInputFile | str = LammpsInputFile.from_file(os.path.join(TEMPLATE_DIR, "in.constrained_relaxation"))
         
         self.settings.update({
             "temperature": self.temperature,
@@ -48,7 +51,7 @@ class FrenkelLaddMaker(CustomLammpsMaker):
     spring_constants: list[float] = None  # Default spring constants in eV/A^2
 
     def __post_init__(self):
-        self.input_file: LammpsInputFile | str = "in.frenkel_ladd"
+        self.input_file: LammpsInputFile | str = LammpsInputFile.from_file(os.path.join(TEMPLATE_DIR, "in.frenkel_ladd"))
         
         self.settings.update({
             "temperature": self.temperature,
@@ -73,7 +76,7 @@ class ReversibleScalingMaker(CustomLammpsMaker):
     pressure: float = 1.0
     
     def __post_init__(self):
-        self.input_file: LammpsInputFile | str = "in.reversible_scaling"
+        self.input_file: LammpsInputFile | str = LammpsInputFile.from_file(os.path.join(TEMPLATE_DIR, "in.reversible_scaling"))
         
         self.settings.update({
             "final_temperature": self.final_temperature,
